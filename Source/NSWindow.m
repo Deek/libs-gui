@@ -1720,6 +1720,10 @@ titleWithRepresentedFilename(NSString *representedFilename)
  */
 - (void) orderFront: (id)sender
 {
+  if ([NSApp isHidden])
+    {
+	  [NSApp unhideWithoutActivation];
+	}
   [self orderWindow: NSWindowAbove relativeTo: 0];
 }
 
@@ -1732,6 +1736,10 @@ titleWithRepresentedFilename(NSString *representedFilename)
 */
 - (void) orderFrontRegardless
 {
+  if ([NSApp isHidden])
+    {
+	  [NSApp unhideWithoutActivation];
+	}
   [self orderWindow: NSWindowAbove relativeTo: -1];
 }
 
