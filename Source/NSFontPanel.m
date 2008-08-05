@@ -293,8 +293,8 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
       [previewArea setFont: fontObject];
       if (_previewString == nil)
         { 
-	  [previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %d PT",
-						 family, face, (int)size]];
+	  [previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %g pt.",
+						 family, face, size]];
 	}
     }
 }
@@ -821,8 +821,8 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	{
 	  faceName = [[_faceList objectAtIndex: _face] objectAtIndex: 1];
 	}
-      [previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %d PT",
-					     familyName, faceName, (int)size]];
+      [previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %g pt.",
+					     familyName, faceName, size]];
     }    
 }
 

@@ -1050,10 +1050,13 @@ static BOOL flip_hack;
   return [fontInfo isBaseFont]; 
 }
 
-/* Usually the display name of font is the font name.*/
+/**<p>The "display name" of a font is the human-readable name that a person
+ would use to describe it. e.g. "Courier New Italic" as opposed to its
+ PostScript name "CourierNewPSMT-Italic".</p>
+ */
 - (NSString*) displayName
 {
-  return fontName; 
+  return [fontInfo displayName];
 }
 
 - (NSDictionary*) afmDictionary
