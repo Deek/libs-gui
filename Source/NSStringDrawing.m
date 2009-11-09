@@ -314,8 +314,10 @@ static inline void prepare_attributed_string(NSAttributedString *string)
   cache_t *scratch = cache + NUM_CACHE_ENTRIES;
   NSTextStorage *scratchTextStorage = scratch->textStorage;
 
+  [scratchTextStorage beginEditing];
   [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, [scratchTextStorage length])
                           withAttributedString: string];
+  [scratchTextStorage endEditing];
 }
 
 static BOOL use_screen_fonts(void)
