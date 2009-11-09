@@ -527,7 +527,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
  * -application:openFile: message to the application (which must be
  * handled by the applications delegate).  If the application is not
  * running, NSWorkspace will instead attempt to launch the application
- * passing the filename to open after a '-GSFilePath' flag
+ * passing the filename to open after a '-NSOpen' flag
  * in the command line arguments.  For a GNUstep application, the
  * application will recognize this and invoke the -application:openFile:
  * method passing it the file name.
@@ -537,7 +537,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
  * for them containing the appropriate Info-gnustep.plist.<br />
  * For instance - you could set up xv.app to contain a shellscript 'xv'
  * that would start the real xv binary passing it a file to open if the
- * '-GSFilePath' argument was given. The Info-gnustep.plist file could look
+ * '-NSOpen' argument was given. The Info-gnustep.plist file could look
  * like this:
  * </p>
  * <example>
@@ -945,7 +945,7 @@ static NSDictionary		*urlPreferences = nil;
     {
       NSArray *args;
 
-      args = [NSArray arrayWithObjects: @"-GSFilePath", fullPath, nil];
+      args = [NSArray arrayWithObjects: @"-NSOpen", fullPath, nil];
       return [self _launchApplication: appName arguments: args];
     }
   else
