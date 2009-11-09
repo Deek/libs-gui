@@ -27,6 +27,7 @@
 #include "config.h"
 #import <Foundation/NSArray.h>
 #import <Foundation/NSCoder.h>
+#import <Foundation/NSCharacterSet.h>
 #import <Foundation/NSDictionary.h>
 //#import <Foundation/NSException.h>
 #import <Foundation/NSString.h>
@@ -46,6 +47,7 @@
 #import "AppKit/NSMenuItemCell.h"
 #import "AppKit/NSMenuView.h"
 #import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSStringDrawing.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
 
@@ -227,45 +229,55 @@ static NSString *commandKeyString = @"#";
   return _menuView;
 }
 
-- (NSString*) _keyEquivalentString
+- (NSAttributedString *) _keyEquivalentString
 {
-  NSString *key = [_menuItem keyEquivalent];
-  unsigned int m = [_menuItem keyEquivalentModifierMask];
-  NSString *ucKey = [key uppercaseString];
-  unichar uchar;
+	NSString            *key = [_menuItem keyEquivalent];
+	NSFontManager       *fm = [NSFontManager sharedFontManager];
+	unsigned int        m = [_menuItem keyEquivalentModifierMask];
+	NSMutableParagraphStyle *ps;
 
-  if ((key == nil) || [key isEqualToString: @""])
-    return key;
-  
-  uchar = [key characterAtIndex: 0];
-  if (uchar >= 0xF700)
-    {
-      // FIXME: At the moment we are not able to handle function keys
-      // as key equivalent
-      return nil;
-    }
+	NSFont              *keyFont;
+	NSMutableDictionary *dict;
+	unichar             uchar;
 
-  if ([key isEqualToString: @"\\r"])
-    key = @"RET";
-  else if ([key isEqualToString: @"\\e"])
-    key = @"ESC";
-  else if ([key isEqualToString: @"\\d"])
-    key = @"DEL";
+	dict = AUTORELEASE([[self _nonAutoreleasedTypingAttributes] mutableCopy]);
 
-  if (m != 0)
-    {
-      BOOL shift;
-      // shift mask and not an upper case string?
-      shift = (m & NSShiftKeyMask) & ![key isEqualToString: ucKey];
-      key = [NSString stringWithFormat:@"%@%@%@%@%@",
-                      (m & NSControlKeyMask) ? controlKeyString : @"",
-                      (m & NSAlternateKeyMask) ? alternateKeyString : @"",
-                      shift ? shiftKeyString : @"",
-                      (m & NSCommandKeyMask) ? commandKeyString : @"",
-                      key];
-    }
+	if (!key || [key isEqualToString: @""]) {
+		return nil;
+	} else if ([key isEqualToString: @"\\r"] || [key isEqualToString: @"\\n"]) {
+		key = @"Enter";
+	} else if ([key isEqualToString: @"\\e"]) {
+		key = @"Esc";
+	} else if ([key isEqualToString: @"\\d"]) {
+		key = @"Del";
+	} else {
+		uchar = [key characterAtIndex: 0];
+		if (uchar >= 0xF700) {
+			// FIXME: At the moment we are not able to handle function keys
+			// as key equivalent
+			return nil;
+		}
 
-  return key;
+		if ([key length] == 1 && [[NSCharacterSet letterCharacterSet] characterIsMember: uchar]) {	// char is a letter
+			if (m & NSShiftKeyMask)	// need shift key to enter key equiv ?
+				key = [key uppercaseString];
+		}
+	}
+
+	if (![self keyEquivalentFont])
+		[self setKeyEquivalentFont: [self font]];
+
+	key = [NSString stringWithFormat: @"%@%@", (m & NSControlKeyMask) ? @"^" : @"", key];
+	keyFont = [fm convertFont: [self keyEquivalentFont]
+	              toHaveTrait: (m & NSAlternateKeyMask) ? NSItalicFontMask : NSUnitalicFontMask];
+	[dict setObject: keyFont forKey: NSFontAttributeName];
+
+	ps = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+	[ps setLineBreakMode: NSLineBreakByClipping];
+	[ps setAlignment: NSRightTextAlignment];
+	[dict setObject: ps forKey: NSParagraphStyleAttributeName];
+
+	return AUTORELEASE([[NSAttributedString alloc] initWithString: key attributes: dict]);
 }
 
 - (void) calcSize
@@ -339,7 +351,7 @@ static NSString *commandKeyString = @"#";
   _titleWidth = componentSize.width;
   if (componentSize.height > neededMenuItemHeight)
     neededMenuItemHeight = componentSize.height;
-  componentSize = [self _sizeText: [self _keyEquivalentString]];
+  componentSize = [[self _keyEquivalentString] size];
   _keyEquivalentWidth = componentSize.width;
   if (componentSize.height > neededMenuItemHeight)
     neededMenuItemHeight = componentSize.height;
@@ -736,7 +748,7 @@ static NSString *commandKeyString = @"#";
    */
   else if (![[_menuView menu] _ownedByPopUp] || (_imageToDisplay == nil))
     {    
-      [self _drawText: [self _keyEquivalentString] inFrame: cellFrame];
+      [self _drawAttributedText: [self _keyEquivalentString] inFrame: cellFrame];
     }
 }
 
