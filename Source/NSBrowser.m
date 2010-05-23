@@ -3463,11 +3463,6 @@ static BOOL browserUseBezels;
     }
 }
 
-- (void) setNeedsDisplayInRect: (NSRect)invalidRect
-{
-  [super setNeedsDisplayInRect: invalidRect];
-}
-
 - (NSBorderType) _resolvedBorderType
 {
   if (browserUseBezels && _separatesColumns)
