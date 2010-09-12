@@ -28,6 +28,7 @@
 #import <Foundation/NSArray.h>
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSCharacterSet.h>
+#import <Foundation/NSDebug.h>
 #import <Foundation/NSDictionary.h>
 //#import <Foundation/NSException.h>
 #import <Foundation/NSString.h>
@@ -229,6 +230,96 @@ static NSString *commandKeyString = @"#";
   return _menuView;
 }
 
+#define CHAR_TBL_SIZE 72
+static struct 
+{
+  NSString *name;
+  unichar character;
+} charTable[] = {
+  /* Function keys.  */
+  { @"Up", NSUpArrowFunctionKey },
+  { @"Down", NSDownArrowFunctionKey },
+  { @"Left", NSLeftArrowFunctionKey },
+  { @"Right", NSRightArrowFunctionKey },
+  { @"F1", NSF1FunctionKey },
+  { @"F2", NSF2FunctionKey },
+  { @"F3", NSF3FunctionKey },
+  { @"F4", NSF4FunctionKey },
+  { @"F5", NSF5FunctionKey },
+  { @"F6", NSF6FunctionKey },
+  { @"F7", NSF7FunctionKey },
+  { @"F8", NSF8FunctionKey },
+  { @"F9", NSF9FunctionKey },
+  { @"F10", NSF10FunctionKey },
+  { @"F11", NSF11FunctionKey },
+  { @"F12", NSF12FunctionKey },
+  { @"F13", NSF13FunctionKey },
+  { @"F14", NSF14FunctionKey },
+  { @"F15", NSF15FunctionKey },
+  { @"F16", NSF16FunctionKey },
+  { @"F17", NSF17FunctionKey },
+  { @"F18", NSF18FunctionKey },
+  { @"F19", NSF19FunctionKey },
+  { @"F20", NSF20FunctionKey },
+  { @"F21", NSF21FunctionKey },
+  { @"F22", NSF22FunctionKey },
+  { @"F23", NSF23FunctionKey },
+  { @"F24", NSF24FunctionKey },
+  { @"F25", NSF25FunctionKey },
+  { @"F26", NSF26FunctionKey },
+  { @"F27", NSF27FunctionKey },
+  { @"F28", NSF28FunctionKey },
+  { @"F29", NSF29FunctionKey },
+  { @"F30", NSF30FunctionKey },
+  { @"F31", NSF31FunctionKey },
+  { @"F32", NSF32FunctionKey },
+  { @"F33", NSF33FunctionKey },
+  { @"F34", NSF34FunctionKey },
+  { @"F35", NSF35FunctionKey },
+  { @"Ins", NSInsertFunctionKey },
+  { @"Del", NSDeleteFunctionKey },
+  { @"Home", NSHomeFunctionKey },
+  { @"Begin", NSBeginFunctionKey },
+  { @"End", NSEndFunctionKey },
+  { @"PgUp", NSPageUpFunctionKey },
+  { @"PgDn", NSPageDownFunctionKey },
+  { @"PrtScr", NSPrintScreenFunctionKey },
+  { @"ScrLk", NSScrollLockFunctionKey },
+  { @"Pause", NSPauseFunctionKey },
+  { @"SysRq", NSSysReqFunctionKey },
+  { @"Break", NSBreakFunctionKey },
+  { @"Reset", NSResetFunctionKey },
+  { @"Stop", NSStopFunctionKey },
+  { @"Menu", NSMenuFunctionKey },
+  { @"User", NSUserFunctionKey },
+  { @"System", NSSystemFunctionKey },
+  { @"Print", NSPrintFunctionKey },
+  { @"ClearLine", NSClearLineFunctionKey },
+  { @"ClearDisplay", NSClearDisplayFunctionKey },
+  { @"InsertLine", NSInsertLineFunctionKey },
+  { @"DeleteLine", NSDeleteLineFunctionKey },
+  { @"InsertChar", NSInsertCharFunctionKey },
+  { @"DeleteChar", NSDeleteCharFunctionKey },
+  { @"Prev", NSPrevFunctionKey },
+  { @"Next", NSNextFunctionKey },
+  { @"Select", NSSelectFunctionKey },
+  { @"Execute", NSExecuteFunctionKey },
+  { @"Undo", NSUndoFunctionKey },
+  { @"Redo", NSRedoFunctionKey },
+  { @"Find", NSFindFunctionKey },
+  { @"Help", NSHelpFunctionKey },
+  { @"Mode Switch", NSModeSwitchFunctionKey },
+
+  /* Special characters by name.  Useful if you want, for example,
+     to associate some special action to C-Tab or similar evils.  */
+  { @"Backspace", NSDeleteCharacter },
+  { @"BackTab", NSBackTabCharacter },
+  { @"Tab", NSTabCharacter },
+  { @"Enter", NSEnterCharacter },
+  { @"FormFeed", NSFormFeedCharacter },
+  { @"Return", NSCarriageReturnCharacter }
+};
+
 - (NSAttributedString *) _keyEquivalentString
 {
 	NSString            *key = [_menuItem keyEquivalent];
@@ -253,9 +344,16 @@ static NSString *commandKeyString = @"#";
 	} else {
 		uchar = [key characterAtIndex: 0];
 		if (uchar >= 0xF700) {
-			// FIXME: At the moment we are not able to handle function keys
-			// as key equivalent
-			return nil;
+			int i;
+			for (i = 0; i < CHAR_TBL_SIZE; i++) {
+				if (uchar == (charTable[i]).character) {
+					key = (charTable[i]).name;
+				}
+			}
+			if (i == CHAR_TBL_SIZE) {
+				NSDebugLog (@"NSMenuItemCell: unknown character '%d'", uchar);
+				return nil;
+			}
 		}
 
 		if ([key length] == 1 && [[NSCharacterSet letterCharacterSet] characterIsMember: uchar]) {	// char is a letter
