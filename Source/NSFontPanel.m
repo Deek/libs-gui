@@ -293,8 +293,8 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
       [previewArea setFont: fontObject];
       if (_previewString == nil)
         { 
-	  [previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %g pt.",
-						 family, face, size]];
+	  [previewArea setStringValue: [NSString stringWithFormat: @"%@ %g pt.",
+						 [fontObject displayName], size]];
 	}
     }
 }
@@ -795,35 +795,45 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
     }
 
   if (_previewString == nil)
-    { 
+    {
       NSTextField *sizeField = [[self contentView] viewWithTag: NSFPSizeField];
       float	size = [sizeField floatValue];
-      NSString	*faceName;
-      NSString	*familyName;
-      
-      if (size == 0 && font != nil)
+      NSString	*displayName;
+
+      if (font)
 	{
-	  size = [font pointSize];
-	}
-      if (_family == -1)
-	{
-	  familyName = _(@"NoFamily");
+	  if (size == 0)
+	    size = [font pointSize];
+
+	  displayName = [font displayName];
 	}
       else
 	{
-	  familyName = [_familyList objectAtIndex: _family];
+	  NSString  *familyName;
+	  NSString  *faceName;
+
+	  if (_family == -1)
+	    {
+	      familyName = _(@"NoFamily");
+	    }
+	  else
+	    {
+	      familyName = [_familyList objectAtIndex: _family];
+	    }
+	  if (_face == -1 || ![_faceList count])
+	    {
+	      faceName = _(@"NoFace");
+	    }
+	  else
+	    {
+	      faceName = [[_faceList objectAtIndex: _face] objectAtIndex: 1];
+	    }
+	  displayName = [NSString stringWithFormat: @"%@ %@", familyName, faceName];
 	}
-      if (_face == -1 || ![_faceList count])
-	{
-	  faceName = _(@"NoFace");
-	}
-      else
-	{
-	  faceName = [[_faceList objectAtIndex: _face] objectAtIndex: 1];
-	}
-      [previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %g pt.",
-					     familyName, faceName, size]];
-    }    
+
+	[previewArea setStringValue: [NSString stringWithFormat: @"%@ %g pt.",
+	                             displayName, size]];
+    }
 }
 
 - (void) ok: (id)sender
