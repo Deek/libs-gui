@@ -580,10 +580,15 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
       // Too short to be an RTF
       return nil;
     }
-  [rtfData getBytes: buffer range: NSMakeRange(7, 3)];
+  [rtfData getBytes: buffer range: NSMakeRange(7, 4)];
   if (strncmp(buffer, "mac", 3) == 0)
     {
       encoding = NSMacOSRomanStringEncoding;
+    }
+  else if (strncmp(buffer, "next", 4) == 0)
+    {
+      // FIXME: Code page 437 kCFStringEncodingDOSLatinUS
+      encoding = NSNEXTSTEPStringEncoding;
     }
   else if (strncmp(buffer, "pc", 2) == 0)
     {
@@ -911,8 +916,15 @@ void GSRTFmangleText (void *ctxt, const char *text)
 {
   NSData *data = [[NSData alloc] initWithBytes: (void*)text 
 				 length: strlen(text)];
-  NSString *str = [[NSString alloc] initWithData: data
-				    encoding: ENCODING];
+  NSString *str;
+  NSStringEncoding code = ENCODING;
+
+  if ([FONTNAME isEqualToString: @"Symbol"])
+    {
+      code = NSSymbolStringEncoding;
+    }
+
+  str = [[NSString alloc] initWithData: data encoding: code];
 
   [(RTFConsumer *)ctxt appendString: str];
   DESTROY(str);
