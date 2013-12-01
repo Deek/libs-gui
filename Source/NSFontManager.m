@@ -486,55 +486,81 @@ static Class         fontPanelClass = Nil;
 - (NSFont*) convertFont: (NSFont*)fontObject
             toHaveTrait: (NSFontTraitMask)trait
 {
-  NSFontTraitMask t = [self traitsOfFont: fontObject];
+  NSFontTraitMask original = [self traitsOfFont: fontObject];
+  NSFontTraitMask real = original & ~(NSUnboldFontMask|NSUnitalicFontMask);
 
-  if (t & trait)
+  if (!(original & NSBoldFontMask))
     {
-      // If already have that trait then just return it
+      original |= NSUnboldFontMask;
+    }
+  if (!(original & NSItalicFontMask))
+    {
+      original |= NSUnitalicFontMask;
+    }
+
+  if (original & trait)
+    {	// If already have that trait then just return it
       return fontObject;
     }
   else
-    {
-      // Else convert it
-      NSFont *newFont;
+    {	// Else convert it
+      NSArray		*members = [self availableMembersOfFontFamily: [fontObject familyName]];
+      NSMutableArray	*matches = [NSMutableArray array];
+      int		i, targetWeight;
 
-      int weight = [self weightOfFont: fontObject];
-      float size = [fontObject pointSize];
-      NSString *family = [fontObject familyName];
+      if (trait & NSUnboldFontMask)
+	{
+	  trait &= ~NSUnboldFontMask;
+	  trait &= ~NSBoldFontMask;
+	}
+      if (trait & NSUnitalicFontMask)
+	{
+	  trait &= ~NSUnitalicFontMask;
+	  trait &= ~NSItalicFontMask;
+	}
 
-      if (trait & NSBoldFontMask)
-        {
-          // We cannot reuse the weight in a bold
-          weight = 9;
-          t = t & ~NSUnboldFontMask;
-        }
-      else if (trait & NSUnboldFontMask)
-        {
-          // We cannot reuse the weight in an unbold
-          weight = 5;
-          t = t & ~NSBoldFontMask;
-        }
-      if (trait == NSItalicFontMask)
-        {
-          t = t & ~NSUnitalicFontMask;
-        }
-      else if (trait & NSUnitalicFontMask)
-        {
-          t = t & ~NSItalicFontMask;
-        }
+      NSDebugLLog (@"NSFontManager", @"converting %@ to traits 0x%x", [fontObject fontName], real|trait);
 
-      t = t | trait;
+      real |= trait;
 
-      newFont = [self fontWithFamily: family 
-                              traits: t
-                              weight: weight
-                                size: size];
+      targetWeight = (real & NSBoldFontMask) ? 9.0 : 5.0;
 
-      if (newFont == nil)
-        return fontObject;
-      else 
-        return newFont;
+      for (i = 0; i < [members count]; i++)
+	{
+	  NSArray *cur = [members objectAtIndex: i];
+
+	  if ([[cur objectAtIndex: 3] intValue] == real
+	      && targetWeight == [[cur objectAtIndex: 2] floatValue])
+	    {
+	      [matches addObject: cur];
+	    }
+	}
+      if ([matches count])
+	{	// got at least 1 match
+	  NSDebugLLog (@"NSFontManager", @"Exact Matches: %@", matches);
+	  return [NSFont fontWithName: [[matches objectAtIndex: 0] objectAtIndex: 0]
+	                 size: [fontObject pointSize]];
+	}
+
+      for (i = 0; i < [members count]; i++)
+	{
+	  NSArray *cur = [members objectAtIndex: i];
+
+	  if ([[cur objectAtIndex: 3] intValue] == real
+	      && abs (targetWeight-[[cur objectAtIndex: 2] intValue]) <= 1)
+	    {
+	      [matches addObject: cur];
+	    }
+	}
+      if ([matches count])
+	{	// got at least 1 match
+	  NSDebugLLog (@"NSFontManager", @"Inexact Matches: %@", matches);
+	  return [NSFont fontWithName: [[matches objectAtIndex: 0] objectAtIndex: 0]
+	                 size: [fontObject pointSize]];
+	}
     }
+
+  return fontObject;
 }
 
 - (NSFont*) convertFont: (NSFont*)fontObject
