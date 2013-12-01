@@ -120,64 +120,39 @@ readString (StringContext *ctxt)
 
 - (NSFont*) currentFont
 {
-  NSFont *font;
-  NSFontTraitMask traits = 0;
-  int weight;
+  NSFontManager   *fm = [NSFontManager sharedFontManager];
+  NSFontTraitMask trait;
+  NSFont          *font;
+
+  NSDebugLLog (@"RTFParser", @"currentFont: starting font: %@", fontName);
+  // start out with a PS name, because NeXT always wrote them and this is
+  // easier.
+  font = [NSFont fontWithName: fontName size: fontSize];
+  if (!font)
+    font = [NSFont userFontOfSize: fontSize];
+
+  /*
+	use convertFont:... to get where we want, because if we have a font
+	with the correct family then it's OK if we can't find one with the 
+	right trait(s).
+  */
+  font = [fm convertFont: font toFamily: fontName];
 
   if (bold)
-    {
-      weight = 9;
-      traits |= NSBoldFontMask;
-    }
+    trait = NSBoldFontMask;
   else
-    {
-      weight = 5;
-      traits |= NSUnboldFontMask;
-    }
+    trait = NSUnboldFontMask;
+
+  font = [fm convertFont: font toHaveTrait: trait];
 
   if (italic)
-    {
-      traits |= NSItalicFontMask;
-    }
+    trait = NSItalicFontMask;
   else
-    {
-      traits |= NSUnitalicFontMask;
-    }
+    trait = NSUnitalicFontMask;
 
-  font = [[NSFontManager sharedFontManager] fontWithFamily: fontName
-					    traits: traits
-					    weight: weight
-					    size: fontSize];
-  if (font == nil)
-    {
-      /* Before giving up and using a default font, we try if this is
-       * not the case of a font with a composite name, such as
-       * 'Helvetica-Light'.  In that case, even if we don't have
-       * exactly an 'Helvetica-Light' font family, we might have an
-       * 'Helvetica' one.  */
-      NSRange range = [fontName rangeOfString:@"-"];
+  font = [fm convertFont: font toHaveTrait: trait];
 
-      if (range.location != NSNotFound)
-	{
-	  NSString *fontFamily = [fontName substringToIndex: range.location];
-
-	  font = [[NSFontManager sharedFontManager] fontWithFamily: fontFamily
-						    traits: traits
-						    weight: weight
-						    size: fontSize];
-	}
-      
-      if (font == nil)
-	{
-	  NSDebugMLLog(@"RTFParser", 
-		       @"Could not find font %@ size %f traits %d weight %d", 
-		       fontName, fontSize, traits, weight);
-
-	  /* Last resort, default font.  :-(  */
-	  font = [NSFont userFontOfSize: fontSize];
-	}
-    }
-  
+  NSDebugLLog (@"RTFParser", @"currentFont: final font: %@", [font fontName]);
   return font;
 }
 
