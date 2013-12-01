@@ -189,12 +189,12 @@ readString (StringContext *ctxt)
 
 - (void) resetFont
 {
-  NSFont *font = [NSFont userFontOfSize:12];
+  NSFont *font = [NSFont userFontOfSize: 0];
 
   ASSIGN(fontName, [font familyName]);
-  fontSize = 12.0;
-  italic = NO;
-  bold = NO;
+  fontSize = [font pointSize];
+  italic = [[NSFontManager sharedFontManager] traitsOfFont: font] & NSItalicFontMask;
+  bold = [[NSFontManager sharedFontManager] traitsOfFont: font] & NSItalicFontMask;
 
   underline = NSUnderlineStyleNone;
   strikethrough = NSUnderlineStyleNone;
