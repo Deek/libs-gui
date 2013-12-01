@@ -208,7 +208,7 @@ readString (StringContext *ctxt)
 
 - (void) addTab: (float) location  type: (NSTextTabType) type
 {
-  NSTextTab *tab = [[NSTextTab alloc] initWithType: NSLeftTabStopType 
+  NSTextTab *tab = [[NSTextTab alloc] initWithType: type
 				      location: location];
 
   if (!tabChanged)
