@@ -1273,7 +1273,7 @@ many times.
 static NSString *
 titleWithRepresentedFilename(NSString *representedFilename)
 {
-  return [NSString stringWithFormat: @"%@  --  %@", 
+  return [NSString stringWithFormat: @"%@ \u2014 %@", 
 		   [representedFilename lastPathComponent],
 		   [[representedFilename stringByDeletingLastPathComponent]
 		     stringByAbbreviatingWithTildeInPath]];
