@@ -767,7 +767,7 @@ void NSDottedFrameRect(const NSRect aRect)
 
 void NSFrameRect(const NSRect aRect)
 {
-  NSFrameRectWithWidth(aRect, 1.0);
+  NSFrameRectWithWidth(aRect, 0.0);
 }
 
 void NSFrameRectWithWidth(const NSRect aRect, CGFloat frameWidth)
