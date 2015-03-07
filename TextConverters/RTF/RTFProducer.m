@@ -262,7 +262,7 @@
               fontFamily = @"nil";
             }
 
-          [fontlistString appendFormat: @"%@\\f%@ %@;",
+          [fontlistString appendFormat: @"{%@\\f%@ %@;}",
               [fontDict objectForKey: currFont], fontFamily, currFont];
         }
       return [NSString stringWithFormat: @"{\\fonttbl%@}\n", fontlistString];
