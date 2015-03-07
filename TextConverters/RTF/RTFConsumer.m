@@ -129,7 +129,69 @@ readString (StringContext *ctxt)
   // easier.
   font = [NSFont fontWithName: fontName size: fontSize];
   if (!font)
-    font = [NSFont userFontOfSize: fontSize];
+    {
+      /*
+	This is where things start to get hairy...many (most) RTF writers 
+	output what we would call the "display name" as a font's name. However,
+	this is hard to match in GNUstep. Let's try our best.
+	
+	What we're going to do is split the fontName into substrings and
+	rejoin them by maximum length. ex:
+
+	original: "Times New Roman Bold Italic"
+	first we check for a family named "Times New Roman Bold Italic".
+	If we don't find one, we try "Times New Roman Bold", then
+	"Times New Roman", "Times New", and finally "Times".
+	If we find one, we treat the rest of the string as the face and look
+	for matches.
+
+	Yes, this is nasty.
+       */
+      NSArray	*a = [fontName componentsSeparatedByString: @" "];
+      NSArray	*families = [fm availableFontFamilies];
+
+      NSString	*matchFamily = nil, *matchFace = nil;
+      int	i = [a count];
+
+      NSDebugLLog (@"RTFParser", @"Looking for ``%@''", fontName);
+      do
+        {
+	  NSArray *sub = [a subarrayWithRange: NSMakeRange(0, i)];
+	  NSString *s = [sub componentsJoinedByString: @" "];
+
+	  if ([families containsObject: s])
+	    { // got one!
+	      matchFamily = s;
+	      matchFace = [[a subarrayWithRange: NSMakeRange(i, [a count] - i)]
+	                       componentsJoinedByString: @" "];
+	      NSDebugLLog (@"RTFParser", @"Match found: ``%@/%@''", matchFamily, matchFace);
+	    }
+	  else
+	    { // nope :(
+	      NSDebugLLog (@"RTFParser", @"No match for ``%@''", s);
+	    }
+	  i--;
+        }
+      while (i >= 0 && !matchFamily);
+      if (matchFamily)
+	{
+	  NSArray *faces = [fm availableMembersOfFontFamily: matchFamily];
+	  for (i = 0; i < [faces count]; i++)
+	    { // God, I hate this format
+	      NSArray *curr = [faces objectAtIndex: i];
+	      if ([[curr objectAtIndex: 1] isEqualToString: matchFace])
+		{
+		  NSDebugLLog (@"RTFParser", @"Using ``%@''", [curr objectAtIndex: 0]);
+		  font = [NSFont fontWithName: [curr objectAtIndex: 0]
+		                         size: fontSize];
+		}
+	    }
+	}
+      if (!font)
+	{
+	  font = [NSFont userFontOfSize: fontSize];
+	}
+    }
 
   /*
 	use convertFont:... to get where we want, because if we have a font
