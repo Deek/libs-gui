@@ -760,10 +760,7 @@
                   [resultData appendBytes: "\\\\" length: 2];
                   break;
               case '\n':
-                  [resultData appendBytes: "\\par\n" length: 5];
-                  break;
-              case '\t':
-                  [resultData appendBytes: "\\tab " length: 5];
+                  [resultData appendBytes: "\\\n" length: 2];
                   break;
               case '{':
                   [resultData appendBytes: "\\{" length: 2];
