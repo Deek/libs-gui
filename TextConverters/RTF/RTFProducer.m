@@ -1187,15 +1187,16 @@
 
 - (NSString *)_bodyString
 {
-  NSString *string;
-  NSMutableString *result;
-  unsigned length;
-  NSRange effectiveRange;
+  NSString *string = [text string];
+  NSMutableString *result = (NSMutableString *)[NSMutableString string];;
+  NSDictionary *baseAttributes;
+  unsigned length = [string length];
+  NSRange effectiveRange = NSMakeRange (0, length);
 
-  string = [text string];
-  result = (NSMutableString *)[NSMutableString string];
-  length = [string length];
-  effectiveRange = NSMakeRange(0, 0);
+  // Let's try setting "default" attributes...
+  baseAttributes = [text attributesAtIndex: 0 effectiveRange: &effectiveRange];
+  [result appendString: [self _runStringForString: @"" attributes: baseAttributes]];
+  [self _setAttributesOfLastRun: baseAttributes];
 
   while (effectiveRange.location < length)
     {
