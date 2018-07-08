@@ -331,39 +331,39 @@
       if ((val = [docDict objectForKey: PAPERSIZE]))
         {
           NSSize size = [val sizeValue];
-          [result appendFormat: @"\\paperw%d\\paperh%d",
+          [result appendFormat: @"\\paperw%d\n\\paperh%d\n",
               (short)points2twips(size.width),
               (short)points2twips(size.height)];
         }
 
       if ((num = [docDict objectForKey: LEFTMARGIN]))
         {
-          [result appendFormat: @"\\margl%d",
+          [result appendFormat: @"\\margl%d\n",
               (short)points2twips([num floatValue])];
         }
 
       if ((num = [docDict objectForKey: RIGHTMARGIN]))
         {
-          [result appendFormat: @"\\margr%d",
+          [result appendFormat: @"\\margr%d\n",
               (short)points2twips([num floatValue])];
         }
 
       if ((num = [docDict objectForKey: TOPMARGIN]))
         {
-          [result appendFormat: @"\\margt%d",
+          [result appendFormat: @"\\margt%d\n",
               (short)points2twips([num floatValue])];
         }
 
       if ((num = [docDict objectForKey: BUTTOMMARGIN]))
         {
-          [result appendFormat: @"\\margb%d",
+          [result appendFormat: @"\\margb%d\n",
               (short)points2twips([num floatValue])];
         }
 
       if ((val = [docDict objectForKey: VIEWSIZE]))
         {
           NSSize size = [val sizeValue];
-          [result appendFormat: @"\\vieww%d\\viewh%d",
+          [result appendFormat: @"\\vieww%d\n\\viewh%d\n",
               (short)points2twips(size.width),
               (short)points2twips(size.height)];
         }
@@ -371,20 +371,20 @@
       if ((num = [docDict objectForKey: VIEWZOOM]))
         {
           float factor = [num floatValue];
-          [result appendFormat: @"\\viewscale%d",
+          [result appendFormat: @"\\viewscale%d\n",
               (short)factor];
         }
 
       if ((num = [docDict objectForKey: VIEWMODE]))
         {
           int mode = [num intValue];
-          [result appendFormat: @"\\viewkind%d",
+          [result appendFormat: @"\\viewkind%d\n",
               (short)mode];
         }
 
       if ((num = [docDict objectForKey: HYPHENATIONFACTOR]))
         {
-          [result appendFormat: @"\\hyphauto1\\hyphfactor%d",
+          [result appendFormat: @"\\hyphauto1\n\\hyphfactor%d\n",
               (short)points2twips([num floatValue]) * 5];
         }
 
