@@ -615,12 +615,6 @@
       [result appendString: [self fontToken: fontName]];
     }
 
-  // size
-  if ((! fontOfLastRun) || ([font pointSize] != [fontOfLastRun pointSize]))
-    {
-      [result appendFormat: @"\\fs%d", (short)(int)([font pointSize] * 2)];
-    }
-
   // traits
   traits = [[NSFontManager sharedFontManager] traitsOfFont: font];
   traitsOfLastRun = [[NSFontManager sharedFontManager] traitsOfFont: 
@@ -649,6 +643,13 @@
           [result appendString: @"\\b0"];
         }
     }
+
+  // size
+  if ((! fontOfLastRun) || ([font pointSize] != [fontOfLastRun pointSize]))
+    {
+      [result appendFormat: @"\\fs%d", (short) rint([font pointSize] * 2.0)];
+    }
+
   return result;
 }
 
