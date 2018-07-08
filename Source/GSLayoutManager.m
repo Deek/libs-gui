@@ -550,7 +550,7 @@ Private method used internally by GSLayoutManager for sanity checking.
       */
       if (curRange.location < pos && context[0]->char_length &&
           // FIXME: Why 16 and not MAX_RUN_LENGTH
-          context[0]->char_length < 16)
+          context[0]->char_length < MAX_RUN_LENGTH)
         {
           curRange.length -= pos - curRange.location;
           curRange.location = pos;
@@ -1467,7 +1467,7 @@ places where we switch.
         */
         if (rng.location < ch && context[0]->char_length &&
             // FIXME: Why 16 and not MAX_RUN_LENGTH
-            context[0]->char_length < 16)
+            context[0]->char_length < MAX_RUN_LENGTH)
           {
             rng.length -= ch - rng.location;
             rng.location = ch;
@@ -2195,7 +2195,7 @@ by calling this incorrectly.
     {
       if (!tc->size_linefrags)
 	{
-	  tc->size_linefrags = 16;
+	  tc->size_linefrags = MAX_RUN_LENGTH;
 	  tc->linefrags = malloc(sizeof(linefrag_t) * tc->size_linefrags);
 	}
       tc->num_linefrags = 1;
