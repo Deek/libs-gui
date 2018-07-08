@@ -258,7 +258,7 @@ is resized.
 Line fragment padding<br />
 
 The line fragment padding is an amount of space left empty at each end of
-a line fragment rectangle by the standard typesetter. The default is 0.0.
+a line fragment rectangle by the standard typesetter. The default is 5 points.
 */
 - (void) setLineFragmentPadding: (CGFloat)aFloat;
 - (CGFloat) lineFragmentPadding;
