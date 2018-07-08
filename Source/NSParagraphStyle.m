@@ -217,12 +217,12 @@ static NSParagraphStyle	*defaultStyle = nil;
       /*
       int		i;
 
-      for (i = 0; i < 12; i++)
+      for (i = 0; i < 16; i++)
         {
           NSTextTab	*tab;
 
           tab = [[NSTextTab alloc] initWithType: NSLeftTabStopType
-                                   location: (i + 1) * 28.0];
+                                   location: (i + 1) * 36.0];
           [style->_tabStops addObject: tab];
           RELEASE(tab);
         }

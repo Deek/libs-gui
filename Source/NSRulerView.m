@@ -223,7 +223,7 @@ static NSMutableDictionary *units = nil;
     {
       [self setScrollView: aScrollView];
       [self setOrientation: o];
-      [self setMeasurementUnits: @"Points"]; /* FIXME: should be user's pref */
+      [self setMeasurementUnits: @"Inches"]; /* FIXME: should be user's pref */
       [self setRuleThickness: RULER_THICKNESS];
       [self setOriginOffset: 0.0];
       [self setReservedThicknessForAccessoryView: 0.0];
