@@ -162,6 +162,7 @@ LexKeyword RTFcommands[] =
     {"NeXTGraphic",token(RTFNeXTGraphic)},
     {"NeXTHelpLink",token(RTFNeXTHelpLink)},
     {"NeXTHelpMarker",token(RTFNeXTHelpMarker)},
+    {"_",         token(RTFunderscore)},
     {"ansi",      token(RTFansi)},
     {"b",         token(RTFbold)},
     {"blue",      token(RTFblue)},
@@ -237,6 +238,7 @@ LexKeyword RTFcommands[] =
     {"qc",        token(RTFalignCenter)},
     {"qj",        token(RTFalignJustified)},
     {"ql",        token(RTFalignLeft)},
+    {"qmspace",   token(RTFqmspace)},
     {"qr",        token(RTFalignRight)},
     {"rdblquote", token(RTFrdblquote)},
     {"red",       token(RTFred)},
@@ -457,20 +459,6 @@ int GSRTFlex (YYSTYPE *lvalp, //YYLTYPE *llocp,
 		  break;
 	      case RTFcell: c = '\t';
 		  break;
-	      case RTFemdash: c = '-';
-		  break;
-	      case RTFendash: c = '-';
-		  break;
-	      case RTFbullet: c = '*';
-		  break;
-	      case RTFlquote: c = '`';
-		  break;
-	      case RTFrquote: c = '\'';
-		  break;
-	      case RTFldblquote: c = '"';
-		  break;
-	      case RTFrdblquote: c = '"';
-		  break;
 	      default:
 		  return token;
 	  }
@@ -487,15 +475,14 @@ int GSRTFlex (YYSTYPE *lvalp, //YYLTYPE *llocp,
 		  c = gethex(lctxt);
 		  break;
 	      case '*': return RTFignore;
-	      case '|': 
-	      case '-': 
-	      case ':':
+	      case '|': // this is a special char to start formula typesetting
+	      case '-': // this is an explicit hyphenation point
+	      case ':': // index sub-entry
 		  // Ignore these characters
 		  c = lexGetchar(lctxt);
 		  break;
-	      case '_': c = '-';
-		  break;
-	      case '~': c = ' ';
+	      case '~':
+		  c = 0xa0; // non-break space
 		  break;
 	      case '\n':
 	      case '\r':

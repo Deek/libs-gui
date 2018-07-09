@@ -123,9 +123,11 @@ int fieldStart = 0;
 %token RTFfldpriv
 %token RTFfttruetype
 %token RTFlquote
+%token RTFqmspace
 %token RTFrquote
 %token RTFldblquote
 %token RTFrdblquote
+%token RTFunderscore
 %token <cmd> RTFred
 %token <cmd> RTFgreen
 %token <cmd> RTFblue
@@ -519,6 +521,17 @@ rtfStatement: RTFfont				{ int font;
                 |	RTFplain	        { GSRTFdefaultCharacterStyle(CTXT); }
                 |	RTFparagraph	        { GSRTFparagraph(CTXT); }
                 |	RTFrow   	        { GSRTFparagraph(CTXT); }
+		|	RTFbullet	        { GSRTFunicode(CTXT, 0x2022); }
+		|	RTFemdash	        { GSRTFunicode(CTXT, 0x2014); }
+		|	RTFendash	        { GSRTFunicode(CTXT, 0x2023); }
+		|	RTFemspace	        { GSRTFunicode(CTXT, 0x2003); }
+		|	RTFenspace	        { GSRTFunicode(CTXT, 0x2002); }
+		|	RTFqmspace	        { GSRTFunicode(CTXT, 0x2005); }
+		|	RTFlquote	        { GSRTFunicode(CTXT, 0x2018); }
+		|	RTFrquote	        { GSRTFunicode(CTXT, 0x2019); }
+		|	RTFldblquote	        { GSRTFunicode(CTXT, 0x201c); }
+		|	RTFrdblquote	        { GSRTFunicode(CTXT, 0x201d); }
+		|	RTFunderscore	        { GSRTFunicode(CTXT, 0x2011); }
 		|	RTFOtherStatement	{ GSRTFgenericRTFcommand(CTXT, $1); 
 		                                  free((void*)$1.name); }
 		;

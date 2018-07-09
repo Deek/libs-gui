@@ -748,70 +748,96 @@
       unichar c;
 
       c = buffer[i];
-      if (c < 0x80)
+      switch (c) // check for special characters
         {
-          // encoding found
-          char ansiChar;
+	      case '\t':	// tab
+		  [resultData appendBytes: "\\tab " length: 5];
+		  break;
+	      case '\\':	// backslash
+		  [resultData appendBytes: "\\\\" length: 2];
+		  break;
+	      case '\n':	// newline
+		  [resultData appendBytes: "\\\n" length: 2];
+		  break;
+	      case '{':		// open brace
+		  [resultData appendBytes: "\\{" length: 2];
+		  break;
+	      case '}':		// close brace
+		  [resultData appendBytes: "\\}" length: 2];
+		  break;
+	      case 0xa0:	// non-breaking space
+		  [resultData appendBytes: "\\~" length: 2];
+		  break;
+	      case 0x2002:	// En space
+		  [resultData appendBytes: "\\enspace " length: 9];
+		  break;
+	      case 0x2003:	// Em space
+		  [resultData appendBytes: "\\emspace " length: 9];
+		  break;
+	      case 0x2005:	// Quarter em space
+		  [resultData appendBytes: "\\qmspace " length: 9];
+		  break;
+	      case 0x2013:	// En dash
+		  [resultData appendBytes: "\\endash " length: 8];
+		  break;
+	      case 0x2014:	// Em dash
+		  [resultData appendBytes: "\\emdash " length: 8];
+		  break;
+	      case 0x2018:	// English left single quote
+		  [resultData appendBytes: "\\lquote " length: 8];
+		  break;
+	      case 0x2019:	// English right single quote
+		  [resultData appendBytes: "\\rquote " length: 8];
+		  break;
+	      case 0x201c:	// English left double quote
+		  [resultData appendBytes: "\\ldblquote " length: 11];
+		  break;
+	      case 0x201d:	// English right double quote
+		  [resultData appendBytes: "\\rdblquote " length: 11];
+		  break;
+	      case 0x2022:	// Bullet
+		  [resultData appendBytes: "\\bullet " length: 8];
+		  break;
+	      case NSAttachmentCharacter:
+		  [resultData appendBytes: "\\'AC}" length: 5];
+		  break;
+	      default:
+		{
+		  if (c < 0x80)
+		    {
+		      char ansiChar = (char) c;
 
-          ansiChar = (char)c;
+		      [resultData appendBytes: &ansiChar length: 1];
+		    }
+		  else if (c < 0xff)
+		    {
+		      char unicodeCommand[16];
 
-          switch (ansiChar)
-            {
-              case '\\':
-                  [resultData appendBytes: "\\\\" length: 2];
-                  break;
-              case '\n':
-                  [resultData appendBytes: "\\\n" length: 2];
-                  break;
-              case '{':
-                  [resultData appendBytes: "\\{" length: 2];
-                  break;
-              case '}':
-                  [resultData appendBytes: "\\}" length: 2];
-                  break;
-              case '`':
-                  [resultData appendBytes: "\\lquote " length: 8];
-                  break;
-              case '\'':
-                  [resultData appendBytes: "\\rquote " length: 8];
-                  break;
-              default:
-                  [resultData appendBytes: &ansiChar length: 1];
-                  break;                  
-            }
-        }
-      else if (c < 0xFF)
-        {
-          char unicodeCommand[16];
-          
-          snprintf(unicodeCommand, 16, "\\'%X", (short)c);
-          unicodeCommand[15] = '\0';
+		      snprintf(unicodeCommand, 16, "\\'%X", (short)c);
+		      unicodeCommand[15] = '\0';
 
-          [resultData appendBytes: unicodeCommand
-                           length: strlen(unicodeCommand)];
+		      [resultData appendBytes: unicodeCommand
+		                       length: strlen(unicodeCommand)];
+		    }
+		  else
+		    {
+		      char unicodeCommand[16];
+
+		      if (!uc_flagged)
+			{
+			  // We don't supply an ANSI representation for Unicode characters
+			  [resultData appendBytes: "\\uc0 " length: 5];
+			  uc_flagged = YES;
+			}
+
+		      snprintf(unicodeCommand, 16, "\\u%d ", (short)c);
+		      unicodeCommand[15] = '\0';
+
+		      [resultData appendBytes: unicodeCommand
+		                       length: strlen(unicodeCommand)];
+		    }
+		}
 	}
-      else if (c == NSAttachmentCharacter)
-        {
-          [resultData appendBytes: "\\'AC}" length: 5];
-        }
-      else
-        {
-          // write unicode encoding
-          char unicodeCommand[16];
-
-          if (!uc_flagged)
-            {
-              // We don't supply an ANSI representation for Unicode characters
-              [resultData appendBytes: "\\uc0 " length: 5];
-              uc_flagged = YES;
-            }
-
-          snprintf(unicodeCommand, 16, "\\u%d ", (short)c);
-          unicodeCommand[15] = '\0';
-
-          [resultData appendBytes: unicodeCommand
-                           length: strlen(unicodeCommand)];       
-        }
     }
 
   NSZoneFree([self zone], buffer);
