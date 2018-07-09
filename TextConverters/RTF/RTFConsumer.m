@@ -1049,16 +1049,12 @@ void GSRTFpaperWidth (void *ctxt, int width)
   NSValue *val = [dict objectForKey: PAPERSIZE];
   NSSize size;
 
-  if (val == nil)
-    {
-      size = NSMakeSize(fwidth, 792);
-    }
-  else
+  if (val)
     {
       size = [val sizeValue];
       size.width = fwidth;
+      [dict setObject: [NSValue valueWithSize: size]  forKey: PAPERSIZE];
     }
-  [dict setObject: [NSValue valueWithSize: size]  forKey: PAPERSIZE];
 }
 
 void GSRTFpaperHeight (void *ctxt, int height)
@@ -1068,16 +1064,12 @@ void GSRTFpaperHeight (void *ctxt, int height)
   NSValue *val = [dict objectForKey: PAPERSIZE];
   NSSize size;
 
-  if (val == nil)
-    {
-      size = NSMakeSize(612, fheight);
-    }
-  else
+  if (val)
     {
       size = [val sizeValue];
       size.height = fheight;
+      [dict setObject: [NSValue valueWithSize: size]  forKey: PAPERSIZE];
     }
-  [dict setObject: [NSValue valueWithSize: size]  forKey: PAPERSIZE];
 }
 
 void GSRTFmarginLeft (void *ctxt, int margin)
