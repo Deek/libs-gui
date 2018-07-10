@@ -241,19 +241,34 @@
 
           // ##FIXME: If we ever have more fonts to map to families, we should
           // use a dictionary
-          if ([currFont isEqualToString: @"Symbol"])
+          if ([currFont containsString: @"Symbol"]
+	      || [currFont containsString: @"Dingbats"]
+	      || [currFont containsString: @"Pi "]
+	      || [currFont containsString: @"Wingdings"])
             {
               fontFamily = @"tech";
             }
-          else if ([currFont isEqualToString: @"Helvetica"])
-            {
-              fontFamily = @"swiss";
-            }
-          else if ([currFont isEqualToString: @"Courier"])
+          else if ([currFont containsString: @"Courier"]
+	           || [currFont containsString: @"Console"]
+	           || [currFont containsString: @"Modern"]
+	           || [currFont containsString: @"Mono"])
             {
               fontFamily = @"modern";
             }
-          else if ([currFont isEqualToString: @"Times"])
+          else if ([currFont containsString: @"Helvetica"]
+	           || [currFont containsString: @"Arial"]
+	           || [currFont containsString: @"Casual"]
+	           || [currFont containsString: @"Gothic"]
+	           || [currFont containsString: @"Grotesk"]
+	           || [currFont containsString: @"Grotesque"]
+	           || [currFont containsString: @"Sans"])
+            {
+              fontFamily = @"swiss";
+            }
+          else if ([currFont containsString: @"Times"]
+	           || [currFont containsString: @"Garamond"]
+	           || [currFont containsString: @"Palatino"]
+	           || [currFont containsString: @"Serif"])
             {
               fontFamily = @"roman";
             }
