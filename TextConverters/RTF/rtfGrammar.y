@@ -2,7 +2,7 @@
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
-   Author:  Stefan Böhringer (stefan.boehringer@uni-bochum.de)
+   Author:  Stefan BÃ¶hringer (stefan.boehringer@uni-bochum.de)
    Date: Dec 1999
 
    This file is part of the GNUstep GUI Library.
@@ -29,9 +29,10 @@
   'GSRTFPparse', `GSRTFPlex', `GSRTFPerror', `GSRTFPnerrs', `GSRTFPlval',
   `GSRTFPchar', `GSRTFPdebug
 */
+%name-prefix "GSRTF"
 
 /*	we request for a reentrant parser	*/
-%pure_parser
+%define api.pure full
 
 %{
 
@@ -64,20 +65,24 @@ typedef void	*GSRTFctxt;
 // yyparse in the .c file must be corrected to be able to compile it.
 /*#define YYPARSE_PARAM	ctxt, void *lctxt*/
 #define YYLEX_PARAM		lctxt
-/*#undef YYLSP_NEEDED*/
+//#define YYLSP_NEEDED
+
+
 #define CTXT            ctxt
 
 #define	YYERROR_VERBOSE
 #define YYDEBUG 1
 
 #include "RTFConsumerFunctions.h"
-/*int GSRTFlex (YYSTYPE *lvalp, RTFscannerCtxt *lctxt); */
-int GSRTFlex(void *lvalp, void *lctxt);
+
+int GSRTFlex(void *lvalp, RTFscannerCtxt *lctxt);
 
 /* */
 int fieldStart = 0;
 
 %}
+
+%lex-param {RTFscannerCtxt *lctxt}
 
 %parse-param {void *ctxt}
 %parse-param {void *lctxt}
