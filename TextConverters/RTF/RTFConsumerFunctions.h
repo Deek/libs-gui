@@ -49,6 +49,9 @@ void GSRTFstop(void *ctxt);
 /* */
 int GSRTFgetPosition(void *ctxt);
 
+/* process an \ansicpgN command */
+void GSRTFsetCodepage (void *ctxt, int codepage);
+
 /*
  * those pairing functions enclose RTFBlocks. Use it to capture the
  * hierarchical attribute changes of blocks.  i.e. attributes of a

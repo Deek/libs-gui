@@ -622,7 +622,7 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
     {
       encoding = NSMacOSRomanStringEncoding;
     }
-  else if (strncmp(buffer, "next", 4) == 0)
+  else if (strncmp(buffer, "next", 4) == 0 || strncmp(buffer, "ansi", 4) == 0)
     {
       // FIXME: Code page 437 kCFStringEncodingDOSLatinUS
       encoding = NSNEXTSTEPStringEncoding;
@@ -979,6 +979,93 @@ void GSRTFunicode (void *ctxt, int uchar)
       [(RTFConsumer *)ctxt appendString: str];
       DESTROY(str);
     }
+}
+
+void GSRTFsetCodepage (void *ctxt, int codepage)
+{
+  NSStringEncoding coding = ENCODING;	// if nothing changes, this is saved
+
+  switch (codepage)
+    {
+      case 950:
+      case 1370:
+	coding = NSBIG5StringEncoding;
+	break;
+      case 1250:
+	coding = NSWindowsCP1250StringEncoding;
+	break;
+      case 1251:
+	coding = NSWindowsCP1251StringEncoding;
+	break;
+      case 1252:
+	coding = NSWindowsCP1252StringEncoding;
+	break;
+      case 1253:
+	coding = NSWindowsCP1253StringEncoding;
+	break;
+      case 1254:
+	coding = NSWindowsCP1254StringEncoding;
+	break;
+      case 10000:
+	coding = NSMacOSRomanStringEncoding;
+	break;
+      case 20127:
+	coding = NSASCIIStringEncoding;
+	break;
+      case 20866:
+	coding = NSKOI8RStringEncoding;
+	break;
+      case 20932:
+	coding = NSJapaneseEUCStringEncoding;
+	break;
+      case 28591:
+	coding = NSISOLatin1StringEncoding;
+	break;
+      case 28592:
+	coding = NSISOLatin2StringEncoding;
+	break;
+      case 28593:
+	coding = NSISOLatin3StringEncoding;
+	break;
+      case 28594:
+	coding = NSISOLatin4StringEncoding;
+	break;
+      case 28595:
+	coding = NSISOCyrillicStringEncoding;
+	break;
+      case 28596:
+	coding = NSISOArabicStringEncoding;
+	break;
+      case 28597:
+	coding = NSISOGreekStringEncoding;
+	break;
+      case 28598:
+	coding = NSISOHebrewStringEncoding;
+	break;
+      case 28599:
+	coding = NSISOLatin5StringEncoding;
+	break;
+      case 28600:
+	coding = NSISOLatin6StringEncoding;
+	break;
+      case 28601:
+	coding = NSISOThaiStringEncoding;
+	break;
+      case 28603:
+	coding = NSISOLatin7StringEncoding;
+	break;
+      case 28604:
+	coding = NSISOLatin8StringEncoding;
+	break;
+      case 28605:
+	coding = NSISOLatin9StringEncoding;
+	break;
+      case 65001:
+	coding = NSUTF8StringEncoding;
+	break;
+    }
+
+    ENCODING = coding;
 }
 
 void GSRTFregisterFont (void *ctxt, const char *fontName, 

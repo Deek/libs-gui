@@ -98,6 +98,7 @@ int fieldStart = 0;
 %token RTFstart
 %token RTFansi
 %token RTFmac
+%token RTFnext
 %token RTFpc
 %token RTFpca
 %token RTFignore
@@ -133,6 +134,7 @@ int fieldStart = 0;
 %token RTFldblquote
 %token RTFrdblquote
 %token RTFunderscore
+%token <cmd> RTFansicpg
 %token <cmd> RTFred
 %token <cmd> RTFgreen
 %token <cmd> RTFblue
@@ -221,6 +223,7 @@ rtfCharset: RTFansi { $$ = 1; }
 		|	RTFmac { $$ = 2; }
 		|	RTFpc  { $$ = 3; }
 		|	RTFpca { $$ = 4; }
+		|	RTFnext { $$ = 5; }
 		;
 
 rtfIngredients:	/*	empty	*/
@@ -381,6 +384,11 @@ rtfStatement: RTFfont				{ int font;
 		|	RTFlineSpace		{ GSRTFlineSpace(CTXT, $1.parameter); }
 		|	RTFdefaultParagraph	{ GSRTFdefaultParagraph(CTXT); }
 		|	RTFstyle		{ GSRTFstyle(CTXT, $1.parameter); }
+		|	RTFansicpg	        { if ($1.parameter)
+						    {
+						      GSRTFsetCodepage(CTXT, $1.parameter);
+						    }
+						}
 		|	RTFcolorbg		{ int color; 
 		
 		                                  if ($1.isEmpty)
